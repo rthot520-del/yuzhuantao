@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rthot520-del.github.io/yuzhuantao/sitemap.xml
