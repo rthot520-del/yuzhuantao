@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鱼转淘采集软件 - 闲鱼爆款搬淘宝 - 批量采集工具</title>
+  <meta name="description" content="鱼转淘采集软件，一键采集闲鱼商品数据，支持整店采集、单品采集、关注列表采集，100款商品10分钟完成">
+  <meta name="keywords" content="鱼转淘采集,闲鱼采集,批量采集,闲鱼搬家">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; }
+    .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+    .navbar .container { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+    .navbar .logo { font-size: 24px; font-weight: bold; color: #667eea; text-decoration: none; }
+    .navbar .nav-links { display: flex; gap: 30px; list-style: none; }
+    .navbar .nav-links a { color: #333; text-decoration: none; font-size: 16px; transition: color 0.3s; }
+    .navbar .nav-links a:hover { color: #667eea; }
+    .navbar .nav-links li { position: relative; }
+    .navbar .nav-links li ul { display: none; position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px; padding: 10px 0; min-width: 150px; }
+    .navbar .nav-links li:hover ul { display: block; }
+    .navbar .nav-links li ul li { padding: 8px 20px; }
+    .navbar .nav-links li ul li a { font-size: 14px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 20px; text-align: center; }
+    .header h1 { font-size: 36px; margin-bottom: 10px; }
+    .header h2 { font-size: 20px; font-weight: normal; opacity: 0.9; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; display: flex; gap: 30px; }
+    .sidebar { width: 280px; flex-shrink: 0; }
+    .sidebar .widget { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .sidebar .widget h3 { font-size: 18px; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; }
+    .sidebar .widget ul { list-style: none; }
+    .sidebar .widget ul li { padding: 8px 0; border-bottom: 1px solid #eee; }
+    .sidebar .widget ul li:last-child { border-bottom: none; }
+    .sidebar .widget ul li a { color: #666; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar .widget ul li a:hover { color: #667eea; }
+    .sidebar .contact-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 25px; border-radius: 12px; }
+    .sidebar .contact-box h3 { color: white; border: none; padding: 0; margin-bottom: 10px; }
+    .sidebar .contact-box .wechat { font-size: 24px; font-weight: bold; letter-spacing: 2px; }
+    .sidebar .contact-box p { font-size: 14px; margin-top: 10px; opacity: 0.9; }
+    .main { flex: 1; }
+    .article { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .article h1 { font-size: 28px; color: #333; margin-bottom: 15px; }
+    .article .meta { font-size: 14px; color: #999; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+    .article .content { font-size: 16px; line-height: 1.8; color: #333; }
+    .article .content h2 { font-size: 20px; color: #667eea; margin: 25px 0 15px; }
+    .article .content p { margin-bottom: 15px; }
+    .article .content ul { margin: 15px 0; padding-left: 20px; }
+    .article .content li { margin-bottom: 8px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 30px; }
+    .feature-item { background: #f8f9fa; padding: 25px; border-radius: 10px; border-left: 4px solid #667eea; }
+    .feature-item h4 { font-size: 18px; color: #667eea; margin-bottom: 8px; }
+    .feature-item p { font-size: 14px; color: #666; margin: 0; line-height: 1.6; }
+    .step-list { counter-reset: step; }
+    .step-list li { list-style: none; padding: 15px 0; position: relative; padding-left: 50px; border-bottom: 1px solid #eee; }
+    .step-list li:last-child { border-bottom: none; }
+    .step-list li::before { content: counter(step); counter-increment: step; position: absolute; left: 0; top: 12px; width: 35px; height: 35px; background: #667eea; color: white; border-radius: 50%; text-align: center; line-height: 35px; font-weight: bold; }
+    .footer { background: #333; color: #999; text-align: center; padding: 30px 20px; margin-top: 40px; }
+    .footer a { color: #667eea; text-decoration: none; }
+    @media (max-width: 768px) { .navbar .nav-links { display: none; } .container { flex-direction: column; } .sidebar { width: 100%; } .feature-grid { grid-template-columns: 1fr; } .article { padding: 20px; } }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="logo">鱼转淘</a>
+    <ul class="nav-links">
+      <li><a href="index.html">首页</a></li>
+      <li><a href="#">软件介绍</a>
+        <ul>
+          <li><a href="collect.html">采集软件</a></li>
+          <li><a href="upload.html">上传软件</a></li>
+        </ul>
+      </li>
+      <li><a href="tutorial.html">使用教程</a></li>
+      <li><a href="update.html">更新日志</a></li>
+      <li><a href="faq.html">常见问题</a></li>
+      <li><a href="contact.html">联系我们</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="header">
+  <h1>鱼转淘采集软件</h1>
+  <h2>一键采集闲鱼商品数据 · 批量上传到淘宝</h2>
+</div>
+<div class="container">
+  <aside class="sidebar">
+    <div class="widget">
+      <h3>软件分类</h3>
+      <ul>
+        <li><a href="collect.html">鱼转淘采集软件</a></li>
+        <li><a href="upload.html">鱼转淘上传软件</a></li>
+        <li><a href="tutorial.html">使用教程</a></li>
+        <li><a href="update.html">更新日志</a></li>
+      </ul>
+    </div>
+    <div class="widget contact-box">
+      <h3>联系我们</h3>
+      <p class="wechat">MTXZY888</p>
+      <p>添加微信了解更多</p>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="article">
+      <h1>鱼转淘采集软件（界面版本）教程</h1>
+      <p class="meta">2026-06-08 | 置顶</p>
+      <div class="content">
+        <h2>软件简介</h2>
+        <p>鱼转淘采集软件主要功能是采集闲鱼店铺数据，包括标题、价格、图片、详情文字等。在采集结束之后，可以按照自己的需求进行导出，然后配合上传软件使用。</p>
+        <h2>核心功能</h2>
+        <div class="feature-grid">
+          <div class="feature-item">
+            <h4>整店采集</h4>
+            <p>输入闲鱼店铺链接，一键采集整个店铺所有商品</p>
+          </div>
+          <div class="feature-item">
+            <h4>单品采集</h4>
+            <p>单个商品链接采集，支持详情页文字提取</p>
+          </div>
+          <div class="feature-item">
+            <h4>关注列表采集</h4>
+            <p>采集您关注的闲鱼卖家店铺商品</p>
+          </div>
+          <div class="feature-item">
+            <h4>批量导出</h4>
+            <p>支持CSV格式导出，兼容上传软件</p>
+          </div>
+        </div>
+        <h2>使用步骤</h2>
+        <ol class="step-list">
+          <li>打开鱼转淘采集软件</li>
+          <li>选择采集模式（整店/单品/关注列表）</li>
+          <li>粘贴闲鱼商品链接或店铺链接</li>
+          <li>点击开始采集，等待完成</li>
+          <li>预览采集结果，编辑修改</li>
+          <li>导出CSV数据包</li>
+        </ol>
+        <h2>注意事项</h2>
+        <ul>
+          <li>单品采集支持提取详情页文字，需要使用单品采集功能</li>
+          <li>批量采集时建议设置适当间隔，避免请求过快</li>
+          <li>导出的CSV文件请使用UTF-8编码打开，避免乱码</li>
+          <li>如遇采集失败，可尝试更换网络或稍后重试</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+</div>
+<footer class="footer">
+  <p>鱼转淘采集软件 · 闲鱼爆款搬淘宝 · 批量上传工具</p>
+  <p style="margin-top:10px;">Copyright © 2026 MTXZY888 All Rights Reserved</p>
+</footer>
+</body>
+</html>
