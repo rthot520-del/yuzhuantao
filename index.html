@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鱼转淘采集软件 - 闲鱼爆款搬淘宝 - 批量采集工具</title>
+  <meta name="description" content="鱼转淘采集软件，一键采集闲鱼商品数据，批量上传到淘宝店铺，打破平台限制，日上传量无上限">
+  <meta name="keywords" content="鱼转淘,闲鱼采集,淘宝上传,批量采集,闲鱼搬家">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; }
+
+    .navbar {
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+    }
+    .navbar .logo { font-size: 24px; font-weight: bold; color: #667eea; text-decoration: none; }
+    .navbar .nav-links { display: flex; gap: 30px; list-style: none; }
+    .navbar .nav-links a { color: #333; text-decoration: none; font-size: 16px; transition: color 0.3s; }
+    .navbar .nav-links a:hover { color: #667eea; }
+    .navbar .nav-links li { position: relative; }
+    .navbar .nav-links li ul { display: none; position: absolute; top: 100%; left: 0; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px; padding: 10px 0; min-width: 150px; }
+    .navbar .nav-links li:hover ul { display: block; }
+    .navbar .nav-links li ul li { padding: 8px 20px; }
+    .navbar .nav-links li ul li a { font-size: 14px; }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 80px 20px;
+      text-align: center;
+    }
+    .header h1 { font-size: 48px; margin-bottom: 15px; }
+    .header h2 { font-size: 24px; font-weight: normal; opacity: 0.9; }
+    .header .contact { margin-top: 25px; font-size: 20px; background: rgba(255,255,255,0.2); display: inline-block; padding: 12px 30px; border-radius: 25px; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; display: flex; gap: 30px; }
+
+    .sidebar { width: 280px; flex-shrink: 0; }
+    .sidebar .widget { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .sidebar .widget h3 { font-size: 18px; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; }
+    .sidebar .widget ul { list-style: none; }
+    .sidebar .widget ul li { padding: 8px 0; border-bottom: 1px solid #eee; }
+    .sidebar .widget ul li:last-child { border-bottom: none; }
+    .sidebar .widget ul li a { color: #666; text-decoration: none; font-size: 14px; display: block; }
+    .sidebar .widget ul li a:hover { color: #667eea; }
+    .sidebar .contact-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 25px; border-radius: 12px; }
+    .sidebar .contact-box h3 { color: white; border: none; padding: 0; margin-bottom: 10px; }
+    .sidebar .contact-box .wechat { font-size: 24px; font-weight: bold; letter-spacing: 2px; }
+    .sidebar .contact-box p { font-size: 14px; margin-top: 10px; opacity: 0.9; }
+
+    .main { flex: 1; }
+    .post-list { display: flex; flex-direction: column; gap: 20px; }
+    .post-item { background: white; border-radius: 12px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .post-item h2 { font-size: 22px; margin-bottom: 15px; }
+    .post-item h2 a { color: #333; text-decoration: none; }
+    .post-item h2 a:hover { color: #667eea; }
+    .post-item .meta { font-size: 14px; color: #999; margin-bottom: 15px; }
+    .post-item .excerpt { font-size: 15px; color: #666; line-height: 1.8; }
+    .post-item .read-more { display: inline-block; margin-top: 15px; color: #667eea; text-decoration: none; font-size: 14px; }
+
+    .article { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .article h1 { font-size: 28px; color: #333; margin-bottom: 15px; }
+    .article .meta { font-size: 14px; color: #999; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+    .article .content { font-size: 16px; line-height: 1.8; color: #333; }
+    .article .content h2 { font-size: 20px; color: #667eea; margin: 25px 0 15px; }
+    .article .content p { margin-bottom: 15px; }
+    .article .content ul { margin: 15px 0; padding-left: 20px; }
+    .article .content li { margin-bottom: 8px; }
+
+    .features { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .features h2 { font-size: 24px; color: #333; margin-bottom: 25px; text-align: center; }
+    .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .feature-item { background: #f8f9fa; padding: 25px; border-radius: 10px; border-left: 4px solid #667eea; }
+    .feature-item h4 { font-size: 18px; color: #667eea; margin-bottom: 8px; }
+    .feature-item p { font-size: 14px; color: #666; margin: 0; line-height: 1.6; }
+
+    .tutorial { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+    .tutorial h2 { font-size: 24px; color: #333; margin-bottom: 25px; }
+    .step-list { counter-reset: step; }
+    .step-list li { list-style: none; padding: 15px 0; position: relative; padding-left: 50px; border-bottom: 1px solid #eee; }
+    .step-list li:last-child { border-bottom: none; }
+    .step-list li::before { content: counter(step); counter-increment: step; position: absolute; left: 0; top: 12px; width: 35px; height: 35px; background: #667eea; color: white; border-radius: 50%; text-align: center; line-height: 35px; font-weight: bold; }
+
+    .footer { background: #333; color: #999; text-align: center; padding: 30px 20px; margin-top: 40px; }
+    .footer a { color: #667eea; text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .navbar .nav-links { display: none; }
+      .container { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .header h1 { font-size: 32px; }
+      .article { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="index.html" class="logo">鱼转淘</a>
+    <ul class="nav-links">
+      <li><a href="index.html">首页</a></li>
+      <li>
+        <a href="#">软件介绍</a>
+        <ul>
+          <li><a href="collect.html">采集软件</a></li>
+          <li><a href="upload.html">上传软件</a></li>
+        </ul>
+      </li>
+      <li><a href="tutorial.html">使用教程</a></li>
+      <li><a href="update.html">更新日志</a></li>
+      <li><a href="faq.html">常见问题</a></li>
+      <li><a href="contact.html">联系我们</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="header">
+  <h1>鱼转淘采集软件</h1>
+  <h2>闲鱼爆款搬淘宝 · 批量上传工具</h2>
+  <div class="contact">联系方式：MTXZY888</div>
+</div>
+
+<div class="container">
+
+  <aside class="sidebar">
+    <div class="widget">
+      <h3>软件分类</h3>
+      <ul>
+        <li><a href="collect.html">鱼转淘采集软件</a></li>
+        <li><a href="upload.html">鱼转淘上传软件</a></li>
+        <li><a href="tutorial.html">使用教程</a></li>
+        <li><a href="update.html">更新日志</a></li>
+      </ul>
+    </div>
+    <div class="widget">
+      <h3>热门文章</h3>
+      <ul>
+        <li><a href="collect.html">鱼转淘采集软件(界面版本)教程</a></li>
+        <li><a href="upload.html">鱼转淘上传软件-芒种版本</a></li>
+        <li><a href="tutorial.html">手动修改CSV采集数据教程</a></li>
+        <li><a href="faq.html">一天N万件，轻松破除一千件限制</a></li>
+      </ul>
+    </div>
+    <div class="widget contact-box">
+      <h3>联系我们</h3>
+      <p class="wechat">MTXZY888</p>
+      <p>添加微信了解更多</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="features">
+      <h2>核心功能</h2>
+      <div class="feature-grid">
+        <div class="feature-item">
+          <h4>批量采集</h4>
+          <p>支持整店采集、单品采集、关注列表采集，100款商品10分钟完成</p>
+        </div>
+        <div class="feature-item">
+          <h4>一键上传</h4>
+          <p>一天可上传N万件，轻松破除淘宝1000件限制</p>
+        </div>
+        <div class="feature-item">
+          <h4>多平台支持</h4>
+          <p>支持闲鱼、淘宝、拼多多等多个平台数据互通</p>
+        </div>
+        <div class="feature-item">
+          <h4>简单易用</h4>
+          <p>界面化操作，无需技术基础，会打字就会用</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="post-list">
+      <div class="post-item">
+        <h2><a href="collect.html">鱼转淘采集软件(界面版本)教程</a></h2>
+        <p class="meta">2026-06-08 | 置顶</p>
+        <p class="excerpt">鱼转淘采集软件主要功能是采集闲鱼店铺数据，如标题、价格、图片、详情文字（需使用单个宝贝采集功能）。在采集结束之后，可以按照自己的需求进行导出...</p>
+        <a href="collect.html" class="read-more">阅读更多 →</a>
+      </div>
+      <div class="post-item">
+        <h2><a href="upload.html">鱼转淘上传软件-芒种版本</a></h2>
+        <p class="meta">2026-06-05 | 新版发布</p>
+        <p class="excerpt">鱼转淘上传软件发布0.17版本，新增关键词替换、宝贝类型选择、上架类型选择三个新功能，让上传更加便捷高效...</p>
+        <a href="upload.html" class="read-more">阅读更多 →</a>
+      </div>
+      <div class="post-item">
+        <h2><a href="tutorial.html">手动修改CSV采集数据教程（拒绝乱码）</a></h2>
+        <p class="meta">2026-06-03 | 教程</p>
+        <p class="excerpt">有时候采集的数据会出现乱码问题，本文教您如何手动修改CSV文件，按UTF-8编码保存即可解决乱码问题...</p>
+        <a href="tutorial.html" class="read-more">阅读更多 →</a>
+      </div>
+      <div class="post-item">
+        <h2><a href="faq.html">鱼转淘上货软件使用说明【一天N万件，轻松破除一千件限制】</a></h2>
+        <p class="meta">2026-06-01 | 使用说明</p>
+        <p class="excerpt">鱼转淘上货软件使用说明，打破淘宝平台1000件商品限制，实现一天轻松上传N万件商品...</p>
+        <a href="faq.html" class="read-more">阅读更多 →</a>
+      </div>
+      <div class="post-item">
+        <h2><a href="update.html">鱼转淘上货软件更换API接口重要通知</a></h2>
+        <p class="meta">2026-05-28 | 重要通知</p>
+        <p class="excerpt">请客户重新订购千牛应用以及重新授权软件，以确保软件正常使用...</p>
+        <a href="update.html" class="read-more">阅读更多 →</a>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<footer class="footer">
+  <p>鱼转淘采集软件 · 闲鱼爆款搬淘宝 · 批量上传工具</p>
+  <p style="margin-top:10px;">Copyright © 2026 MTXZY888 All Rights Reserved</p>
+</footer>
+
+</body>
+</html>
